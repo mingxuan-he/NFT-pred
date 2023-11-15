@@ -24,6 +24,7 @@
 \usepackage{xcolor}
 \usepackage{soul}
 \usepackage{float}
+\usepackage{multirow}
 \def\UrlFont{\rmfamily}
 
 \renewcommand \thesection{\Roman{section}}
@@ -106,8 +107,42 @@ Dune Analytics is a platform for querying public databases from the Ethereum blo
 \subsubsection{OpenSea}
 OpenSea is the largest NFT marketplace focusing on NFTs based on Ethereum and Ethereum's Layer-2 ecosystem. The data from OpenSea's public API include data on NFT collections. In particular, I extracted data on the traits and rarity of each unique NFT in the collections. The set of available traits varies by collection, but generally include color, background, face/expression, and accessories.
 
+\subsection{Features and target variables}
+Here I outline the features and target variables used in this project. The target variable is the price of the NFT. The features are divided into four categories: market, base traits, extra traits, and last trade. The features are summarized in Table \ref{tab:feature_columns}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Feature Category} & \textbf{Feature} & \textbf{Description} \\ \hline
+
+    \multirow{4}{*}{Market} & volume\_eth & daily market volume (ETH) \\ \cline{2-3} 
+    & price\_p5\_eth & daily 5-percentile price (ETH) \\ \cline{2-3} 
+    & price\_max\_eth & daily highest price (ETH) \\ \cline{2-3} 
+    & price\_min\_eth & daily minimum (floor) price (ETH)\\ \hline
+
+    \multirow{5}{*}{Base Traits} & rarity\_rank & rarity rank measured by OpenRarity \\ \cline{2-3} 
+    & Background\_count & number of items with the same \textit{Background} trait \\ \cline{2-3} 
+    & Mouth\_count & number of items with the same \textit{Mouth} trait \\ \cline{2-3} 
+    & Eyes\_count & number of items with the same \textit{Eyes} trait\\ \cline{2-3} 
+    & Fur\_count & number of items with the same \textit{Fur} trait \\ \hline
+
+    \multirow{3}{*}{Extra Traits} & Hat\_count & number of items with the same \textit{Hat} trait \\ \cline{2-3} 
+    & Clothes & number of items with the same \textit{Clothes} trait \\ \cline{2-3} 
+    & Earring\_count & number of items with the same \textit{Earring} trait \\ \hline
+
+    \multirow{2}{*}{Last Trade} & last\_trade\_timediff & time since the last time this item was traded \\ \cline{2-3} 
+    & last\_trade\_price & price at the last time this item was traded\\ \hline
+    \end{tabular}
+    \caption{Feature Columns Description (Bored Ape Yacht Club)}
+    \label{tab:feature_columns}
+\end{table}
+    
+
 \subsection{Exploratory analysis}
 % TODO: summary stats with sample size
+%\subsubsection{Summary statistics}
+
+\subsubsection{Price history}
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{../figures/price_date.png}
     \caption{Trade Price by Date}
@@ -118,18 +153,35 @@ OpenSea is the largest NFT marketplace focusing on NFTs based on Ethereum and Et
     \caption{Trade Price by Rarity Rank}
 \end{figure}
 
+\subsubsection{Principal component analysis}
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{../figures/pca_1.png}
+    \caption{PCA(3) plot of NFT prices (Bored Ape Yacht Club)}
+\end{figure}
 
 \section{Methodology}
 \label{sec: method}
-For benchmarking, I will use an OLS model. For the main model, I will use a neural network with a fully connected layer. I will also explore other deep learning methods, including convolutional neural networks (CNNs) and recurrent neural networks (RNNs). This is currently work in progress.
+For benchmarking, I will use an OLS model. For the main model, I will use a neural network with a fully connected layer. I will also explore other deep learning methods, including convolutional neural networks (CNNs) and recurrent neural networks (RNNs). I choose Mean Squared Error (MSE) as the objective function to minimize. This is currently work in progress.
 
 
 \section{Results}
 \label{sec: results}
+I present my preliminary results.
+\subsection{Benchmarking}
+MSE metric for benckmark models:
+\begin{table}[H]
+    \centering
+\begin{tabular}{|p{8em}|p{8em}|}
+    \hline
+    \textbf{Model} & \textbf{MSE} \\ \hline
+    OLS & 455.8 \\ \hline
+    Random Forest & 220.1 \\ \hline
+\end{tabular}
+\end{table}
 
 
-\section{Conclusion}
-\label{sec: conclusion}
+%\section{Conclusion}
+%\label{sec: conclusion}
 
 
 % \section*{Acknowledgements}
@@ -137,6 +189,7 @@ For benchmarking, I will use an OLS model. For the main model, I will use a neur
 
 
 \newpage
+\nocite{*}
 \printbibliography
 
 \newpage
