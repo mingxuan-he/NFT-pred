@@ -1,4 +1,5 @@
 .env
+.vscode
 server_user_id.txt
 
 ## Core latex/pdflatex auxiliary files:
