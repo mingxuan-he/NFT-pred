@@ -1,6 +1,7 @@
 .env
 .vscode
 server_user_id.txt
+wandb
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
