@@ -81,7 +81,7 @@ with st.container():
             )
         y = st.selectbox(
             "Select Y-axis", 
-            ["trade_price"]
+            ["trade_price", "trade_price_log"]
             )
             
     with c12:
