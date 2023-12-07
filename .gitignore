@@ -2,6 +2,7 @@
 .vscode
 server_user_id.txt
 wandb
+tuner
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
