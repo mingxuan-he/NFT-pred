@@ -1,12 +1,49 @@
-\documentclass[12pt]{article}
+%%%----------SETUP----------%%%
+
+\documentclass[11pt, titlepage]{article}
+\usepackage{lmodern}
+\usepackage[margin=1.25in, headheight=14pt]{geometry}
+\usepackage{setspace}
+    \onehalfspacing
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tabularray}
+\usepackage{nameref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+    \graphicspath{ {images/} }
+\usepackage[colorlinks=true, 
+    allcolors=RoyalBlue,
+    citecolor=.]{hyperref} 
+
+
+%%  Set biographic information for the title page and document
+
+\newcommand{\thesistitle}{Deep Learning for Dynamic NFT Valuation}
+\newcommand{\thesisauthor}{Mingxuan He}
+\newcommand{\graddate}{May 2024}
+\newcommand{\facultyadvisor}{Dr. Anthony Lee Zhang}
+\newcommand{\preceptor}{Dr. Gina Pieters}
+\newcommand{\keywords}{NFTs; deep learning; onchain data; zero-knowledge machine learning}
+
+%% Set PDF metadata
+\hypersetup{
+  pdfauthor={\thesisauthor \ Copyright \textcopyright \number\year},
+  pdftitle={\thesistitle},
+  pdfsubject={MACSS MA Thesis},
+  pdfkeywords={\keywords}
+  pdfborder={0 0 0}
+}
+
+%% set up header footer style
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{\thesisauthor}
+\fancyfoot{}
+\fancyfoot[C]{\thepage}
 \usepackage[english]{babel}
 
-% Set page size and margins
-% Replace `letterpaper' with`a4paper' for UK/EU standard size
-\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 
 % to typeset URLs, URIs, and DOIs
-\usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{url}
 \usepackage{graphicx}
 %\usepackage[nolists]{endfloat}
@@ -14,45 +51,61 @@
 
 % Bibliography
 \usepackage[style=apa, backend=biber, natbib]{biblatex}
-\addbibresource{References.bib}
-%\usepackage{natbib}
+    \addbibresource{References.bib}
 
 % useful packages
 \usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools,mathrsfs}
 \usepackage{csquotes}
 \usepackage{caption,subcaption}
 \captionsetup{compatibility=false}
-\usepackage{xcolor}
 \usepackage{soul}
 \usepackage{float}
 \usepackage{multirow}
 \def\UrlFont{\rmfamily}
 
-\renewcommand \thesection{\Roman{section}}
-\renewcommand \thesubsection{\arabic{section}.\arabic{subsection}}
-
 
 \begin{document}
 
-\title{Deep Learning for Dynamic NFT Valuation}
+% \title{Deep Learning for Dynamic NFT Valuation}
 
 
-\author{Mingxuan He
-    \thanks{mingxuanh@uchicago.edu, Chicago, IL, United States of America}}
-\date{\today}
+% \author{Mingxuan He
+%     \thanks{mingxuanh@uchicago.edu, Chicago, IL, United States of America}}
+% \date{\today}
 
 
-\maketitle 
+\begin{titlepage}
+    %% Do not edit the titlepage section. Make any changes above
+    \begin{center}
+        \vspace*{-0.45in}
+        \includegraphics[height = 1.5in]{images/Shield.png}\\
+	\vspace{0.1in}
+        \Large{\uppercase{The University of Chicago}}\\
+	\vspace{0.8in}
+	\LARGE{\textsc{\thesistitle\\}}
+	\vspace{0.8in}
+	\normalsize{By}\\
+	\Large{\thesisauthor\\
+	\vspace{0.5in}
+	\graddate\\}
+        \vspace{0.8in}
+	\Large{A paper submitted in partial fulfillment of the requirements for \\
+	the Master of Arts degree in the Master of Arts in\\
+        Computational Social Science}
+        \vspace*{\fill}		
+    \end{center}
+    \Large{Faculty Advisor: \facultyadvisor \\
+    Preceptor: \preceptor\\}
+    \vspace*{-0.45in}
+\end{titlepage}
 
+\section*{Abstract} 
+I study the price dynamics of non-fungible tokens (NFTs) and propose a deep learning framework for dynamic valuation of NFTs. I use data from the Ethereum blockchain and OpenSea to train a deep learning model on historical trades, market trends, and traits/rarity features of Bored Ape Yacht Club NFTs. After hyperparameter tuning, the model is able to predict the price of NFTs with high accuracy. I propose an application framework for this model using zero-knowledge machine learning (zkML) and discuss its potential use cases in the context of decentralized finance (DeFi) applications.\\
 
-\begin{abstract}
-    I study the price dynamics of non-fungible tokens (NFTs) and propose a deep learning framework for dynamic valuation of NFTs. I use data from the Ethereum blockchain and OpenSea to train a deep learning model on historical trades, market trends, and traits/rarity features of Bored Ape Yacht Club NFTs. After hyperparameter tuning, the model is able to predict the price of NFTs with high accuracy. I propose an application framework for this model using zero-knowledge machine learning (zkML) and discuss its potential use cases in the context of decentralized finance (DeFi) applications.\\
+\bigskip
+\noindent\textbf{Keywords:} \keywords
 
-    \textbf{Keywords:} NFTs, deep learning, onchain data, zkML
-
-\end{abstract} 
-
-%\tableofcontents
+{\color{Gray}\noindent\hrulefill} 
 
 
 \section{Introduction}
@@ -72,7 +125,7 @@ The rest of this paper is structured as follows. Section \ref{sec: lit_review} d
 \section{Literature Review}
 \label{sec: lit_review}
 % market analysis
-The fast-growing market of NFTs has attracted interest from various academic disciplines. In the economics and finance literature, various authors have discussed the price dynamics of the NFT market. A comprehensive work by \citet{nadini2021mapping} mapped out important statistical features of NFT markets, revealing that mean prices, sales per asset, sales per collection all follow power-law distributions. \citet{ante2022non} found that NFT sales are triggered by price shocks in Bitcoin (BTC) and active NFT wallets are reduced by price shocks in  Ether (ETH). Similarly, \citet{dowling2022non} found co-movement between cryptocurrencies and NFTs through wavelet coherence analysis. On the buyer side, \citet{kong2021alternative,oh2022investor} found that well-connected and experienced investors generally earn higher returns on NFT trades. These results support the general belief that the NFT market is not fully efficient, and there is room for improvement in pricing NFTs. 
+The fast-growing market of NFTs has attracted interest from various academic disciplines. In the economics and finance literature, various authors have discussed the price dynamics of the NFT market. A comprehensive work by \citet{nadini2021mapping} mapped out important statistical features of NFT markets, revealing that mean prices, sales per asset, sales per collection all follow power-law distributions. \citet{ante2022non} found that NFT sales are triggered by price shocks in Bitcoin (BTC) and active NFT wallets are reduced by price shocks in  Ether (ETH). Similarly, \citet{dowling2022non} found co-movement between cryptocurrencies and NFTs through wavelet coherence analysis. On the buyer side, \citet{kong2021alternative,oh2022investor} found that well-connected and experienced investors generally earn higher returns on NFT trades. \citet{von2022nft} estimated that from January 2018 to November 2021, nearly all collections were contaminated by suspicious transactions related to NFT wash trading. These results support the general belief that the NFT market is not fully efficient, and there is room for improvement in pricing NFTs. 
 
 % rarity
 The literature agrees on that rarity is one of, if not the most important factors in determining the price of NFTs. Using data from the CryptoPunks collection, \citet{kong2021alternative} built a hedonic regression model and highlighted rarity as a key determinant of price premium in the cross-section. \citet{mekacher2022heterogeneous} used a custom-built rarity score and showed that rarer NFTs sell for higher prices, are traded less frequently, guarantee higher returns, and are less risky. Taking a network clustering approach, \citet{nadini2021mapping} extracted vector representations of the visual features of NFTs and analyzed their cosine distance network using the pre-trained convolutional neural network AlexNet. These results inspired the inclusion of trait features and the OpenRarity rarity rank as a key set of features in my model.
@@ -110,7 +163,7 @@ Dune Analytics is a platform for querying public databases from the Ethereum blo
 OpenSea is the largest NFT marketplace focusing on NFTs based on Ethereum and Ethereum's Layer-2 ecosystem. The data from OpenSea's public API include data on NFT collections. In particular, I extracted data on the traits and rarity of each unique NFT in the collections. The set of available traits varies by collection, but generally include color, background, face/expression, and accessories.
 
 \subsection{Data description}
-As of September 30, 2023, there has been 43,383 BAYC trades recorded in the Dune \texttt{nft.trades} database. It is worth noting that trades conducted outside of marketplaces, such as through private over-the-counter agreements, are not recorded, however those agreements occur not as frequently. Here I outline the features and target variables used in this project. The features are divided into three categories: market, traits \& rarity, and last trade. The features are described in Table \ref{tab: feature_columns}.
+As of September 30, 2023, there has been 43,383 BAYC trades recorded in the Dune \texttt{nft.trades} database. It is worth noting that trades conducted outside of marketplaces, such as through private over-the-counter agreements, are not recorded. Here I outline the features and target variables used in this project. The features are divided into three categories: market, traits \& rarity, and last trade. The features are described in Table \ref{tab: feature_columns}.
 \begin{table}[H]
     \centering
     \caption{Feature Columns Description (Bored Ape Yacht Club)}
@@ -142,16 +195,17 @@ Note that all market data (volume and prices) are at daily frequency and lagged 
     
 
 \subsection{Exploratory analysis}
-% TODO: summary stats with sample size
-%\subsubsection{Summary statistics}
 
 \subsubsection{Price history}
-Figure \ref{fig: price_date} plots the price history of all BAYC trades since April 2021. Figure \ref{fig: price_rarity} plots the price history of BAYC trades by rarity rank. The plots show that the price of BAYC trades has increased significantly since the collection was launched. The price of BAYC trades is positively correlated with rarity rank, with the rarest NFTs trading at a premium.
+Figure \ref{fig: price_date} plots the price history of all BAYC trades, with each entry representing an individual trade. Since the BAYC collection was launched in 2021, its price has increased significantly with a peak in mid 2022, matching the bullish sentiment in the NFT and broader blockchain economy. Since then, the market price has been relatively stable, with a slight downward trend in average price.
+
 \begin{figure}[H]
     \caption{Trade Price by Date}
     \includegraphics[width=\textwidth]{../figures/price_date.png}
     \label{fig: price_date}
 \end{figure}
+
+Figure \ref{fig: price_rarity} plots the average trade price (in ETH) of BAYCs grouped by their rarity rank. The distribution shows a high rarity premium for the rarest NFTs in the collection (top 100) with an average trading price above 60 ETH, almost twice as much as the collection average. There's also a significant premium for the top 2,000 rarest NFTs. However, the relationship between rarity and price is less clear for NFTs below the 2,000 rank threshold. This suggests that factors other than rarity, such as feature asthetics and market sentiment, play a significant role in determining the price of the majority of BAYC NFTs. 
 
 \begin{figure}[H]
     \caption{Trade Price by Rarity Rank}
@@ -160,7 +214,8 @@ Figure \ref{fig: price_date} plots the price history of all BAYC trades since Ap
 \end{figure}
 
 \subsubsection{Principal component analysis}
-Figure \ref{fig: pca} plots the first three principal components of the traits and rarity features. The plot shows that the traits and rarity features are not linearly separable, which motivates the use of non-linear models such as tree-based models and deep learning models.   
+Figure \ref{fig: pca} plots the first three principal components of features listed in table \ref{tab: feature_columns}. The level of clustering indicates no clear separation between price levels in the linear space, which motivates the use of non-linear models such as tree-based models and deep neural networks.
+
 \begin{figure}[H]
     \caption{PCA(3) plot of NFT prices (Bored Ape Yacht Club)}
     \includegraphics[width=\textwidth]{../figures/pca_1.png}
@@ -335,19 +390,20 @@ This research provides insights into valuation of Non-Fungible Tokens (NFTs), pa
 
 In real-world applications, the incorporation of zero-knowledge machine learning (zkML) can further enhances the model's utility, opening up new possibilities in decentralized finance (DeFi) applications. This work not only contributes to the field of digital asset valuation but also sets a foundation for future research in dynamic and trustless NFT pricing within the evolving landscape of blockchain technologies and decentralized markets.
 
-
-% \section*{Acknowledgements}
-% \label{sec: acknowledgements}
-
+\vfill
+{\normalsize \section*{Data and Code Availability Statement}}
+% mention github repo
+\noindent The code and data used in this project are available at \url{https://github.com/mingxuan-he/NFT-pred}. The Dune Analytics query can be viewed at \url{https://dune.com/queries/3124232}.
 
 \newpage
 \nocite{*}
 \printbibliography
 
 \newpage
-\appendix
+\section*{Appendix}
+\label{app}
 
-\section{Rarity Score and Rarity Rank}
+\subsection*{Rarity Score and Rarity Rank}
 \label{app: rarity}
 I use OpenSea's OpenRarity standard to calculate the rarity of each NFT within its collection. The rarity score is defined as follows:\\
 For an NFT $x$ with traits $i\dots n$, its rarity score is
