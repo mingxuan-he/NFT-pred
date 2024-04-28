@@ -43,7 +43,7 @@ def plot_all(x_col,y_col,data=df):
             "token_id": "Token ID",
             "rarity_rank": "Rarity Rank"
         },
-        title=f"{c} historical trades"
+        #title=f"{c} historical trades"
         )
     return fig
 
